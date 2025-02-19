@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>MY Chatbot</title>
+    <style>
+        /* General Styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f3f3f3;
+        }
+
+        /* Chat Button */
+        #chatButton {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+        }
+
+        /* Chat Panel */
+        #chatPanel {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            width: 350px;
+            height: 450px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            display: none;
+            flex-direction: column;
+            z-index: 1000;
+        }
+        #chatPanel.open {
+            display: flex;
+        }
+
+        /* Chat Header */
+        #chatHeader {
+            background: #28a745;
+            color: white;
+            padding: 10px;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        /* Chat Messages */
+        #messages {
+            flex: 1;
+            padding: 10px;
+            overflow-y: auto;
+            background: #f9f9f9;
+        }
+        .message {
+            margin: 5px 0;
+            padding: 10px;
+            border-radius: 10px;
+            max-width: 70%;
+        }
+        .user {
+            background: #d4edda;
+            align-self: flex-end;
+        }
+        .bot {
+            background: #f8d7da;
+            align-self: flex-start;
+        }
+
+        /* Chat Input */
+        #chatInput {
+            display: flex;
+            padding: 10px;
+            background: #ffffff;
+            border-top: 1px solid #ddd;
+        }
+        #userInput {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-right: 10px;
+        }
+        #sendButton {
+            padding: 10px 15px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <button id="chatButton">💬</button>
+    <div id="chatPanel">
+        <div id="chatHeader">Chat with us!</div>
+        <div id="messages"></div>
+        <div id="chatInput">
+            <input id="userInput" type="text" placeholder="Type a message...">
+            <button id="sendButton">Send</button>
+        </div>
+    </div>
+    <script>
+        const chatButton = document.getElementById('chatButton');
+        const chatPanel = document.getElementById('chatPanel');
+        const userInput = document.getElementById('userInput');
+        const messages = document.getElementById('messages');
+        const sendButton = document.getElementById('sendButton');
+
+        chatButton.addEventListener('click', () => {
+            chatPanel.classList.toggle('open');
+        });
+
+        sendButton.addEventListener('click', async () => {
+            const message = userInput.value.trim();
+            if (message) {
+                addMessage(message, 'user');
+                try {
+                    const response = await fetch('/chat', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ message }),
+                    });
+                    const data = await response.json();
+                    addMessage(data.response || 'An error occurred.', 'bot');
+                } catch (error) {
+                    addMessage('Failed to connect to the server.', 'bot');
+                }
+                userInput.value = '';
+            }
+        });
+
+        function addMessage(text, sender) {
+            const message = document.createElement('div');
+            message.className = `message ${sender}`;
+            message.textContent = text;
+            messages.appendChild(message);
+            messages.scrollTop = messages.scrollHeight;
+        }
+    </script>
+</body>
+</html>
