@@ -4,7 +4,7 @@ import requests
 app = Flask(__name__)
 
 # Gemini API configuration (⚠️ Do NOT hardcode API keys in production)
-GEMINI_API_KEY = "AIzaSyB0fXisuGdtP1gf9bIjZOkk_lndonu-kkE"
+GEMINI_API_KEY = ""
 GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent"
 
 # Predefined responses with emojis
